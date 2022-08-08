@@ -1,0 +1,36 @@
+﻿@model MovieTheater.ViewModels.ViewingFormViewModel
+@{
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+
+@using (Html.BeginForm("Save", "Viewings"))
+{
+   <div class="form-group">
+       <label>@Html.DisplayNameFor(m => m.TimeStart)</label>
+        @Html.TextBoxFor(c => c.TimeStart, "{0:dddd, dd MMMM yyyy HH:mm}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.TimeStart)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(c => c.TimeEnd)
+        @Html.TextBoxFor(c => c.TimeEnd, "{0:dddd, dd MMMM yyyy HH:mm}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.TimeEnd)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.MovieId)
+        @Html.DropDownListFor(m => m.MovieId, new SelectList(Model.Movies, "Id", "Name"), "Select Movie", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.MovieId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.TheaterId)
+        @Html.DropDownListFor(m => m.TheaterId, new SelectList(Model.Theaters, "Id", "Name"), "Select Theater", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.TheaterId)
+    </div>
+    @Html.HiddenFor(v => v.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+}

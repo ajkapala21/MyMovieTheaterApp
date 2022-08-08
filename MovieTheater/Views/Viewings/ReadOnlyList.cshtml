@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>All Viewings</h2>
+
+<table id="viewings" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Buy</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var table = $("#viewings").DataTable({
+                ajax: {
+                    url: "/api/viewings",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Name",
+                    },
+                    {
+                        data: "TimeStart",
+                    },
+                    {
+                        data: "TimeEnd",
+                    },
+                    {
+                        data: "Id",
+                        render: function (data, type, viewing) {
+                            if (viewing.SoldOut == true) {
+                                return "<p>Sold Out</p>";
+                            }
+                            else {
+                                return "<a href='/viewings/seating/" + data + "'>Buy Ticket</a>";
+                            }    
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

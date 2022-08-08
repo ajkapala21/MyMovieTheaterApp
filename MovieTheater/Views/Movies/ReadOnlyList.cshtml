@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Movies</h2>
+
+<table id="movies" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Viewings</th>
+            <th>Length</th>
+            <th>Poster</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var table = $("#movies").DataTable({
+                ajax: {
+                    url: "/api/movies",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Name"
+                    },
+                    {
+                        data: "Id",
+                        render: function (data, type, movie) {
+                            return "<a href='/viewings/ViewingList/" + movie.Id + "' class='btn btn-primary' style='width:100%;'>Get Tickets</a>";
+                        }
+                    },
+                    {
+                        data: "Length",
+                        render: function (data) {
+                            return "<p> " + Math.trunc(data / 60) + " Hours " + data % 60 + " Minutes</p>";
+                        }
+                    },
+                    {
+                        data: "ImagePath",
+                        render: function (data, type, movie) {
+                            return "<img style='height:200px; width:auto; display: block; margin-left: auto; margin-right: auto;' src='" + data + "'/>";
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

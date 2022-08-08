@@ -1,0 +1,70 @@
+﻿
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>All Viewings</h2>
+<p>
+    @Html.ActionLink("New Viewing", "New", "Viewings", null, new { @class = "btn btn-primary" })
+</p>
+
+<table id="viewings" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var table = $("#viewings").DataTable({
+                ajax: {
+                    url: "/api/viewings",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Name",
+                        render: function (data, type, viewing) {
+                            return "<a href='/viewings/edit/" + viewing.Id + "'>" + viewing.Name + "</a >";
+                        }
+                    },
+                    {
+                        data: "TimeStartOutput",
+                    },
+                    {
+                        data: "TimeEndOutput",
+                    },
+                    {
+                        data: "Id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-viewing-id='" + data + "'>Delete</button>";
+                        }
+                    }
+                ]
+            });
+            $("#viewings").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("Are you sure you want to delete this viewing?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/viewings/" + button.attr("data-viewing-id"),
+                            method: "DELETE",
+                            success: function () {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,39 @@
+﻿@model MovieTheater.ViewModels.CheckoutViewModel
+@{
+    ViewBag.Title = "Checkout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>Checkout</h2>
+
+<img style="height:auto; width:34%; float:right; padding-left:2%; padding-bottom:2%" src="@Url.Content("~/" + Model.Viewing.Movie.ImagePath)" />
+
+<h3 style="width:66%; border:solid; padding:1%; border-color: darkgrey; border-width: 1px;">
+    @Model.Order.Seats.Count Tickets for @Model.Viewing.Name from
+    @Model.Viewing.TimeStartOutput to @Model.Viewing.TimeEndOutput
+    in @Model.Viewing.Theater.Name
+</h3>
+
+<h3>Seats</h3>
+<hr />
+@for (int i = 0; i < Model.Order.Seats.Count; i++)
+{
+    <h3>@Model.Order.Seats[i].Name</h3>
+}
+
+@using (Html.BeginForm("BuySeats", "Orders"))
+{
+    <div class="form-group">
+
+    </div>
+
+    @Html.HiddenFor(o => o.Order.Id)
+    @Html.HiddenFor(v => v.Viewing.Id)
+
+
+
+    <button type="submit" class="btn btn-primary">Buy</button>
+}
+
+

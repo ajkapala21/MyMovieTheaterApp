@@ -1,0 +1,59 @@
+﻿@model MovieTheater.Models.Movie
+@{
+    ViewBag.Title = "ViewingList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+
+<div style="width:75%; float:left;">
+    <table id="viewings" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Buy</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<img style="height:auto; width:25%; float:right; padding-left:2%; padding-bottom:2%" src="@Url.Content("~/" + Model.ImagePath)" />
+
+<hr  sytle="width:100%;"/>
+@section scripts
+{
+    <script>
+        var model = @Html.Raw(Json.Encode(Model));
+        const Id = model.Id;
+        $(document).ready(function () {
+            var table = $("#viewings").DataTable({
+                ajax: {
+                    url: "/api/viewings/GetViewingsForMovie/" + Id,
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "TimeStartOutput",
+                    },
+                    {
+                        data: "TimeEndOutput",
+                    },
+                    {
+                        data: "Id",
+                        render: function (data, type, viewing) {
+                            if (viewing.SoldOut == true) {
+                                return "<p>Sold Out</p>";
+                            }
+                            else {
+                                return "<a href='/viewings/seating/" + data + "' class='btn btn-primary' style='width:100%;'>Buy Ticket</a>";
+                            }  
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

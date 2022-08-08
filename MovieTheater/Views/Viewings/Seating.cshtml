@@ -1,0 +1,144 @@
+﻿@model MovieTheater.Models.Viewing
+@{
+    ViewBag.Title = "Seating";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Seating for @Model.Movie.Name at @Model.TimeStartOutput</h2>
+
+<div style="width:100%; height:5%; background-color: black; text-align: center;">Screen</div>
+<br />
+<br />
+
+
+<table id="mytable" style="width:100%;">
+</table>
+<br />
+<div style="height: 350px;">
+    <table id="pickedSeats" style="width:15%; float:left;">
+    </table>
+    <a class="btn btn-primary" id="checkoutButton" style="width:15%; float: right;">To Checkout</a>
+</div>
+
+
+
+    @section scripts
+    {
+        <script>
+            var selectedSeats = new Array();
+            var model = @Html.Raw(Json.Encode(Model));
+            const Id = model.Id;
+            const Theater = model.Theater;
+            var countInRow = 0;
+            $(document).ready(function () {
+                $.get('https://localhost:44386/api/seats/' + Id, function (seating) {
+                    var tr = document.createElement("tr");
+                    seating.forEach((seat) => {
+                        if (seat.Taken == false) {
+                            var td = document.createElement("td");
+                            var link = document.createElement('a');
+                            var linkText = document.createTextNode(seat["Name"]);
+                            link.appendChild(linkText);
+                            link.className += "btn  btn-primary";
+                            link.style = "width:100%;";
+                            link.id = seat["Id"];
+                            link.setAttribute("name", seat["Name"]);
+                            link.addEventListener("click", function () {
+                                var link = this;
+                                if (link.classList.contains("btn-primary")) {//select
+                                    Select(link);
+                                }
+                                else { //deselect
+                                    Deselect(link)
+                                }
+                            });
+                            td.appendChild(link);
+                            tr.appendChild(td);
+                            countInRow++;
+                            if (countInRow >= Theater.SeatWidth) {
+                                document.getElementById("mytable").appendChild(tr);
+                                countInRow = 0;
+                                tr = document.createElement("tr");
+                            }
+                        }
+                        else {
+                            var td = document.createElement("td");
+                            var link = document.createElement('a');
+                            var linkText = document.createTextNode("Sold");
+                            link.appendChild(linkText);
+                            link.className += "btn  btn-primary disabled";
+                            link.style = "width:100%;";
+
+                            td.appendChild(link);
+                            tr.appendChild(td);
+                            countInRow++;
+                            if (countInRow >= Theater.SeatWidth) {
+                                document.getElementById("mytable").appendChild(tr);
+                                countInRow = 0;
+                                tr = document.createElement("tr");
+                            }
+                        }
+                    });
+                });
+                $("#checkoutButton").on("click", function () {
+                    if (selectedSeats.length > 0) {
+                        $.ajax({
+                            type: "POST",
+                            data: JSON.stringify(selectedSeats),
+                            url: "/api/orders",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (order) {
+                                window.location = "/Orders/Checkout/" + order.Id;
+                            }
+                        });
+                    }
+                });
+            });
+
+            function Select(link) {
+                link.classList.remove("btn-primary");
+                link.classList.add("btn-default");
+
+                selectedSeats.push(link.id);
+
+                //create row
+                var tr = document.createElement("tr");
+                var tdName = document.createElement("td");
+                var tdButton = document.createElement("td");
+                var seatName = document.createTextNode(link.getAttribute("name"));
+                tdName.style = "text-align:center; width:100px;";
+
+                var button = document.createElement('a');
+                var buttonText = document.createTextNode("Deselect");
+
+                button.setAttribute("selectedTable", link.id); //testing
+
+                button.appendChild(buttonText);
+                button.className += "btn  btn-primary";
+                button.style = "float:right;";
+                button.addEventListener("click", function () {
+                    var button = this;
+                    Deselect(link);
+                });
+                tdButton.appendChild(button);
+                tdName.appendChild(seatName);
+                tr.appendChild(tdName);
+                tr.appendChild(button);
+                document.getElementById("pickedSeats").appendChild(tr);
+            }
+
+            function Deselect(link) {
+                link.classList.remove("btn-default");
+                link.classList.add("btn-primary");
+                const index = selectedSeats.indexOf(link.id);
+                if (index > -1) {
+                    selectedSeats.splice(index, 1);
+                }
+
+                var obj = $('[selectedTable="' + link.id + '"]');
+                var i = $(obj).closest('tr').index()
+                document.getElementById("pickedSeats").deleteRow(i);
+            }
+        </script>
+    }

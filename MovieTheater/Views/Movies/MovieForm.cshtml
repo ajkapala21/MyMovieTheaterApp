@@ -1,0 +1,30 @@
+﻿@model MovieTheater.ViewModels.MovieFormViewModel
+@{
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+
+@using (Html.BeginForm("Save", "Movies", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="form-group">
+        @Html.LabelFor(c => c.Name)
+        @Html.TextBoxFor(c => c.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(c => c.Length)
+        @Html.TextBoxFor(c => c.Length, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Length)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ImagePath)
+        <input type="file" style = "color:white" name="ImageFile" required />
+    </div>
+
+    @Html.HiddenFor(m => m.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+}

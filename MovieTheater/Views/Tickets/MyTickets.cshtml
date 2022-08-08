@@ -1,0 +1,65 @@
+﻿@model MovieTheater.Models.ApplicationUser
+@{
+    ViewBag.Title = "MyTickets";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>MyTickets</h2>
+
+<table id="tickets" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Time Start</th>
+            <th>Time End</th>
+            <th>Theater</th>
+            <th>Seat</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        var model = @Html.Raw(Json.Encode(Model));
+        const Id = model.Id;
+        $(document).ready(function () {
+            var table = $("#tickets").DataTable({
+                ajax: {
+                    url: "/api/tickets/" + Id,
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Viewing",
+                        render: function (data) {
+                            return "<p>" + data.Movie.Name + "</p>";
+                        }
+                    },
+                    {
+                        data: "Viewing",
+                        render: function (data) {
+                            return "<p>" + data.TimeStartOutput + "</p>";
+                        }
+                    },
+                    {
+                        data: "Viewing",
+                        render: function (data) {
+                            return "<p>" + data.TimeEndOutput + "</p>";
+                        }
+                    },
+                    {
+                        data: "Viewing",
+                        render: function (data) {
+                            return "<p>" + data.Theater.Name + "</p>";
+                        }
+                    },
+                    {
+                        data: "SeatName",
+                    }
+                ]
+            });
+        });
+    </script>
+}
